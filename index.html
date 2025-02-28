@@ -4,7 +4,153 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mess Manager Calculator</title>
-    <link rel="stylesheet" href="style.css" />
+    <style>
+        /* Base styles */
+        * {
+          box-sizing: border-box;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          background: linear-gradient(135deg, #74abe2, #5563de);
+          color: #333;
+        }
+
+        /* Responsive container styling */
+        .container {
+          width: 90%;
+          max-width: 1080px;
+          margin: 20px auto;
+          padding: 20px;
+          background: #fff;
+          border-radius: 12px;
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+          animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        /* Headings */
+        h2,
+        h3 {
+          color: #5563de;
+          margin-bottom: 20px;
+        }
+
+        /* Input group styling */
+        .input-group {
+          margin-bottom: 20px;
+        }
+
+        .input-group label {
+          display: block;
+          margin-bottom: 8px;
+          font-weight: bold;
+          color: #444;
+        }
+
+        .input-group input {
+          width: 100%;
+          padding: 10px;
+          font-size: 16px;
+          border: 2px solid #ddd;
+          border-radius: 6px;
+          transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+          border-color: #5563de;
+          outline: none;
+        }
+
+        /* Member input styling */
+        .member {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 15px;
+        }
+
+        .member label {
+          flex: 1;
+          text-align: left;
+          font-weight: 500;
+          color: #555;
+        }
+
+        .member input {
+          flex: 1;
+          margin: 0 5px;
+          padding: 8px;
+          font-size: 14px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+        }
+
+        /* Button styling */
+        .button-group {
+          margin: 20px 0;
+        }
+
+        .button-group button,
+        .download-btn {
+          padding: 12px 20px;
+          margin: 5px;
+          border: none;
+          background: #5563de;
+          color: #fff;
+          border-radius: 6px;
+          font-size: 16px;
+          cursor: pointer;
+          transition: background 0.3s;
+        }
+
+        .button-group button:hover,
+        .download-btn:hover {
+          background: #444ecb;
+        }
+
+        /* Table styling */
+        .table-responsive {
+          overflow-x: auto;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 20px;
+        }
+
+        th,
+        td {
+          padding: 12px;
+          border: 1px solid #ddd;
+          text-align: center;
+        }
+
+        th {
+          background: #5563de;
+          color: #fff;
+        }
+
+        /* Result display styling */
+        .result p {
+          font-size: 16px;
+          margin: 8px 0;
+        }
+    </style>
     <!-- jsPDF from CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
@@ -17,8 +163,6 @@
         <label for="mealDate">Select Date:</label>
         <input type="date" id="mealDate" />
     </div>
-
-    <!-- Total cost is auto‑calculated from the sum of all member payments -->
 
     <h3>Daily Meal Count</h3>
     <div id="mealInputs">
@@ -57,34 +201,36 @@
     <!-- Monthly Meal & Payment Records Section -->
     <div id="monthlyView">
         <h3>Monthly Daily Record</h3>
-        <table id="dailyMealTable">
-            <thead>
-            <tr>
-                <th rowspan="2">Date</th>
-                <th colspan="2">Asif</th>
-                <th colspan="2">Naim</th>
-                <th colspan="2">Shohan</th>
-                <th colspan="2">Rahul</th>
-                <th colspan="2">Samiul</th>
-                <th rowspan="2">Action</th>
-            </tr>
-            <tr>
-                <th>Meal</th>
-                <th>Paid (Taka)</th>
-                <th>Meal</th>
-                <th>Paid (Taka)</th>
-                <th>Meal</th>
-                <th>Paid (Taka)</th>
-                <th>Meal</th>
-                <th>Paid (Taka)</th>
-                <th>Meal</th>
-                <th>Paid (Taka)</th>
-            </tr>
-            </thead>
-            <tbody>
-            <!-- Daily records will be populated here by script.js -->
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table id="dailyMealTable">
+                <thead>
+                <tr>
+                    <th rowspan="2">Date</th>
+                    <th colspan="2">Asif</th>
+                    <th colspan="2">Naim</th>
+                    <th colspan="2">Shohan</th>
+                    <th colspan="2">Rahul</th>
+                    <th colspan="2">Samiul</th>
+                    <th rowspan="2">Action</th>
+                </tr>
+                <tr>
+                    <th>Meal</th>
+                    <th>Paid (Taka)</th>
+                    <th>Meal</th>
+                    <th>Paid (Taka)</th>
+                    <th>Meal</th>
+                    <th>Paid (Taka)</th>
+                    <th>Meal</th>
+                    <th>Paid (Taka)</th>
+                    <th>Meal</th>
+                    <th>Paid (Taka)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Daily records will be populated here by script.js -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Calculation Results -->
@@ -114,186 +260,6 @@
     </div>
 </div>
 
-<script src="script.js"></script>
-</body>
-</html>
-<style>
-    /* Base styles */
-    * {
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    body {
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(135deg, #74abe2, #5563de);
-      color: #333;
-    }
-
-    /* Container styling */
-    .container {
-      margin: 40px auto;
-      padding: 30px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-      animation: fadeIn 1.5s ease-in-out;
-    }
-
-    /* Default container width for larger screens */
-    .container {
-      width: 1080px;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    h2,
-    h3 {
-      color: #5563de;
-      margin-bottom: 20px;
-    }
-
-    /* Input group and member styles */
-    .input-group {
-      margin-bottom: 20px;
-    }
-
-    .input-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-      color: #444;
-    }
-
-    .input-group input {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border: 2px solid #ddd;
-      border-radius: 6px;
-      transition: border-color 0.3s;
-    }
-
-    .input-group input:focus {
-      border-color: #5563de;
-      outline: none;
-    }
-
-    .member {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 15px;
-    }
-
-    .member label {
-      flex: 1;
-      text-align: left;
-      font-weight: 500;
-      color: #555;
-    }
-
-    .member input {
-      flex: 1;
-      margin: 0 5px;
-      padding: 8px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    /* Button styles */
-    .button-group {
-      margin: 20px 0;
-    }
-
-    .button-group button,
-    .download-btn {
-      padding: 12px 20px;
-      margin: 5px;
-      border: none;
-      background: #5563de;
-      color: #fff;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .button-group button:hover,
-    .download-btn:hover {
-      background: #444ecb;
-    }
-
-    /* Table styles */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-
-    th,
-    td {
-      padding: 12px;
-      border: 1px solid #ddd;
-      text-align: center;
-    }
-
-    th {
-      background: #5563de;
-      color: #fff;
-    }
-
-    .result p {
-      font-size: 16px;
-      margin: 8px 0;
-    }
-
-    /* Responsive design */
-
-    /* Mobile devices (up to 480px) */
-    @media (max-width: 479px) {
-      .container {
-        width: 90%;
-        margin: 20px auto;
-        padding: 20px;
-      }
-    }
-
-    /* Tablets (480px to 719px) */
-    @media (min-width: 480px) and (max-width: 719px) {
-      .container {
-        width: 480px;
-        margin: 20px auto;
-      }
-    }
-
-    /* Small laptops/Tablets (720px to 1079px) */
-    @media (min-width: 720px) and (max-width: 1079px) {
-      .container {
-        width: 720px;
-        margin: 20px auto;
-      }
-    }
-
-    /* Laptops and above (1080px and up) */
-    @media (min-width: 1080px) {
-      .container {
-        width: 1080px;
-        margin: 20px auto;
-      }
-    }
-</style>
 <script>
     // Global objects for cumulative totals.
     let meals = { Asif: 0, Naim: 0, Shohan: 0, Rahul: 0, Samiul: 0 };
@@ -592,3 +558,5 @@
       doc.save(filename);
     }
 </script>
+</body>
+</html>
