@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mess Manager Calculator</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- jsPDF from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <h2>Mess Manager Calculator</h2>
+
+    <!-- Daily Meal Input Section -->
+    <div class="input-group">
+        <label for="mealDate">Select Date:</label>
+        <input type="date" id="mealDate" />
+    </div>
+
+    <!-- Total cost is auto‑calculated from the sum of all member payments -->
+
+    <h3>Daily Meal Count</h3>
+    <div id="mealInputs">
+        <div class="member">
+            <label for="mealAsif">Asif</label>
+            <input type="number" id="mealAsif" value="0" min="0" />
+            <input type="number" id="moneyAsif" placeholder="Money Paid (Taka)" />
+        </div>
+        <div class="member">
+            <label for="mealNaim">Naim</label>
+            <input type="number" id="mealNaim" value="0" min="0" />
+            <input type="number" id="moneyNaim" placeholder="Money Paid (Taka)" />
+        </div>
+        <div class="member">
+            <label for="mealShohan">Shohan</label>
+            <input type="number" id="mealShohan" value="0" min="0" />
+            <input type="number" id="moneyShohan" placeholder="Money Paid (Taka)" />
+        </div>
+        <div class="member">
+            <label for="mealRahul">Rahul</label>
+            <input type="number" id="mealRahul" value="0" min="0" />
+            <input type="number" id="moneyRahul" placeholder="Money Paid (Taka)" />
+        </div>
+        <div class="member">
+            <label for="mealSamiul">Samiul</label>
+            <input type="number" id="mealSamiul" value="0" min="0" />
+            <input type="number" id="moneySamiul" placeholder="Money Paid (Taka)" />
+        </div>
+    </div>
+
+    <div class="button-group">
+        <button onclick="addDailyMeal()">Add Daily Meal</button>
+        <button onclick="calculate()">Calculate</button>
+    </div>
+
+    <!-- Monthly Meal & Payment Records Section -->
+    <div id="monthlyView">
+        <h3>Monthly Daily Record</h3>
+        <table id="dailyMealTable">
+            <thead>
+            <tr>
+                <th rowspan="2">Date</th>
+                <th colspan="2">Asif</th>
+                <th colspan="2">Naim</th>
+                <th colspan="2">Shohan</th>
+                <th colspan="2">Rahul</th>
+                <th colspan="2">Samiul</th>
+                <th rowspan="2">Action</th>
+            </tr>
+            <tr>
+                <th>Meal</th>
+                <th>Paid (Taka)</th>
+                <th>Meal</th>
+                <th>Paid (Taka)</th>
+                <th>Meal</th>
+                <th>Paid (Taka)</th>
+                <th>Meal</th>
+                <th>Paid (Taka)</th>
+                <th>Meal</th>
+                <th>Paid (Taka)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Daily records will be populated here by script.js -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Calculation Results -->
+    <div id="result" class="result" style="display: none;">
+        <h3>Results</h3>
+        <p>Total Cost: <span id="totalCost">0.00</span> Taka</p>
+        <p>Total Meals: <span id="totalMeal">0</span></p>
+        <p>Cost per Meal: <span id="costPerMeal">0.00</span> Taka</p>
+        <p>Average Cost per Member: <span id="avgMealCost">0.00</span> Taka</p>
+
+        <table id="resultTable">
+            <thead>
+            <tr>
+                <th>Member</th>
+                <th>Total Meals</th>
+                <th>Member Cost (Taka)</th>
+                <th>Paid (Taka)</th>
+                <th>Balance (Taka)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Calculation results will be populated here -->
+            </tbody>
+        </table>
+
+        <button class="download-btn" onclick="downloadPDF()">Download PDF</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
+<style>
+    /* Base styles */
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #74abe2, #5563de);
+      color: #333;
+    }
+
+    /* Container styling */
+    .container {
+      margin: 40px auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    /* Default container width for larger screens */
+    .container {
+      width: 1080px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h2,
+    h3 {
+      color: #5563de;
+      margin-bottom: 20px;
+    }
+
+    /* Input group and member styles */
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      transition: border-color 0.3s;
+    }
+
+    .input-group input:focus {
+      border-color: #5563de;
+      outline: none;
+    }
+
+    .member {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .member label {
+      flex: 1;
+      text-align: left;
+      font-weight: 500;
+      color: #555;
+    }
+
+    .member input {
+      flex: 1;
+      margin: 0 5px;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* Button styles */
+    .button-group {
+      margin: 20px 0;
+    }
+
+    .button-group button,
+    .download-btn {
+      padding: 12px 20px;
+      margin: 5px;
+      border: none;
+      background: #5563de;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .button-group button:hover,
+    .download-btn:hover {
+      background: #444ecb;
+    }
+
+    /* Table styles */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background: #5563de;
+      color: #fff;
+    }
+
+    .result p {
+      font-size: 16px;
+      margin: 8px 0;
+    }
+
+    /* Responsive design */
+
+    /* Mobile devices (up to 480px) */
+    @media (max-width: 479px) {
+      .container {
+        width: 90%;
+        margin: 20px auto;
+        padding: 20px;
+      }
+    }
+
+    /* Tablets (480px to 719px) */
+    @media (min-width: 480px) and (max-width: 719px) {
+      .container {
+        width: 480px;
+        margin: 20px auto;
+      }
+    }
+
+    /* Small laptops/Tablets (720px to 1079px) */
+    @media (min-width: 720px) and (max-width: 1079px) {
+      .container {
+        width: 720px;
+        margin: 20px auto;
+      }
+    }
+
+    /* Laptops and above (1080px and up) */
+    @media (min-width: 1080px) {
+      .container {
+        width: 1080px;
+        margin: 20px auto;
+      }
+    }
+</style>
+<script>
+    // Global objects for cumulative totals.
+    let meals = { Asif: 0, Naim: 0, Shohan: 0, Rahul: 0, Samiul: 0 };
+    let payments = { Asif: 0, Naim: 0, Shohan: 0, Rahul: 0, Samiul: 0 };
+
+    // Array to store daily records.
+    let dailyRecords = [];
+
+    // On page load, restore dailyRecords from localStorage, recalc totals, and update the table.
+    window.addEventListener("load", () => {
+      const storedRecords = localStorage.getItem("dailyRecords");
+      if (storedRecords) {
+        dailyRecords = JSON.parse(storedRecords);
+        recalcTotals();
+        updateMonthlyTable();
+      }
+    });
+
+    /**
+     * Recalculate cumulative totals from dailyRecords.
+     */
+    function recalcTotals() {
+      meals = { Asif: 0, Naim: 0, Shohan: 0, Rahul: 0, Samiul: 0 };
+      payments = { Asif: 0, Naim: 0, Shohan: 0, Rahul: 0, Samiul: 0 };
+      dailyRecords.forEach(record => {
+        Object.keys(record.meals).forEach(member => {
+          meals[member] += record.meals[member];
+          payments[member] += record.payments[member];
+        });
+      });
+    }
+
+    /**
+     * Save dailyRecords to localStorage.
+     */
+    function saveRecords() {
+      localStorage.setItem("dailyRecords", JSON.stringify(dailyRecords));
+    }
+
+    /**
+     * Add a daily record with the specified date, meal counts, and payments.
+     * Updates cumulative totals, the monthly table, and persists records.
+     */
+    function addDailyMeal() {
+      let mealDate = document.getElementById("mealDate").value;
+      if (!mealDate) {
+        mealDate = new Date().toISOString().split("T")[0];
+      }
+
+      const record = {
+        date: mealDate,
+        meals: {
+          Asif: parseInt(document.getElementById("mealAsif").value) || 0,
+          Naim: parseInt(document.getElementById("mealNaim").value) || 0,
+          Shohan: parseInt(document.getElementById("mealShohan").value) || 0,
+          Rahul: parseInt(document.getElementById("mealRahul").value) || 0,
+          Samiul: parseInt(document.getElementById("mealSamiul").value) || 0,
+        },
+        payments: {
+          Asif: parseFloat(document.getElementById("moneyAsif").value) || 0,
+          Naim: parseFloat(document.getElementById("moneyNaim").value) || 0,
+          Shohan: parseFloat(document.getElementById("moneyShohan").value) || 0,
+          Rahul: parseFloat(document.getElementById("moneyRahul").value) || 0,
+          Samiul: parseFloat(document.getElementById("moneySamiul").value) || 0,
+        },
+      };
+
+      dailyRecords.push(record);
+      saveRecords();
+      recalcTotals();
+      updateMonthlyTable();
+
+      // Reset inputs.
+      ["Asif", "Naim", "Shohan", "Rahul", "Samiul"].forEach(member => {
+        document.getElementById(`meal${member}`).value = 0;
+        document.getElementById(`money${member}`).value = "";
+      });
+
+      alert("Daily meals and payments added!");
+    }
+
+    /**
+     * Refresh the monthly table with current daily records.
+     */
+    function updateMonthlyTable() {
+      const tbody = document.querySelector("#dailyMealTable tbody");
+      tbody.innerHTML = "";
+      dailyRecords.forEach((record, index) => {
+        const tr = document.createElement("tr");
+
+        // Date cell.
+        const dateTd = document.createElement("td");
+        dateTd.textContent = record.date;
+        tr.appendChild(dateTd);
+
+        // For each member, add meal and payment cells.
+        ["Asif", "Naim", "Shohan", "Rahul", "Samiul"].forEach(member => {
+          const mealTd = document.createElement("td");
+          mealTd.textContent = record.meals[member];
+          mealTd.setAttribute("data-member", member);
+          mealTd.setAttribute("data-index", index);
+          tr.appendChild(mealTd);
+
+          const paymentTd = document.createElement("td");
+          paymentTd.textContent = record.payments[member];
+          paymentTd.setAttribute("data-member", member);
+          paymentTd.setAttribute("data-index", index);
+          tr.appendChild(paymentTd);
+        });
+
+        // Action cell with Edit and Delete buttons.
+        const actionTd = document.createElement("td");
+
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "Edit";
+        editBtn.className = "edit-btn";
+        editBtn.onclick = () => { editRecord(index); };
+        actionTd.appendChild(editBtn);
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.className = "delete-btn";
+        deleteBtn.onclick = () => { deleteRecord(index); };
+        actionTd.appendChild(deleteBtn);
+
+        tr.appendChild(actionTd);
+        tbody.appendChild(tr);
+      });
+    }
+
+    /**
+     * Enable editing for both meals and payments for a specific record.
+     */
+    function editRecord(index) {
+      const record = dailyRecords[index];
+      const tbody = document.querySelector("#dailyMealTable tbody");
+      const row = tbody.getElementsByTagName("tr")[index];
+
+      ["Asif", "Naim", "Shohan", "Rahul", "Samiul"].forEach((member, j) => {
+        const mealCellIndex = 1 + j * 2;
+        const payCellIndex = mealCellIndex + 1;
+
+        // Replace meal cell with input.
+        const mealCell = row.cells[mealCellIndex];
+        const mealInput = document.createElement("input");
+        mealInput.type = "number";
+        mealInput.value = record.meals[member];
+        mealInput.min = 0;
+        mealInput.style.width = "60px";
+        mealCell.innerHTML = "";
+        mealCell.appendChild(mealInput);
+
+        // Replace payment cell with input.
+        const paymentCell = row.cells[payCellIndex];
+        const payInput = document.createElement("input");
+        payInput.type = "number";
+        payInput.value = record.payments[member];
+        payInput.min = 0;
+        payInput.style.width = "60px";
+        paymentCell.innerHTML = "";
+        paymentCell.appendChild(payInput);
+      });
+
+      // Change Action cell to have a Save button.
+      const actionCell = row.cells[row.cells.length - 1];
+      actionCell.innerHTML = "";
+      const saveBtn = document.createElement("button");
+      saveBtn.textContent = "Save";
+      saveBtn.className = "save-btn";
+      saveBtn.onclick = () => { saveRecord(index); };
+      actionCell.appendChild(saveBtn);
+    }
+
+    /**
+     * Save the edited record, update cumulative totals, and persist changes.
+     */
+    function saveRecord(index) {
+      const tbody = document.querySelector("#dailyMealTable tbody");
+      const row = tbody.getElementsByTagName("tr")[index];
+      const record = dailyRecords[index];
+
+      // Subtract the old record's values.
+      ["Asif", "Naim", "Shohan", "Rahul", "Samiul"].forEach(member => {
+        meals[member] -= record.meals[member];
+        payments[member] -= record.payments[member];
+      });
+
+      // Update record with new values.
+      ["Asif", "Naim", "Shohan", "Rahul", "Samiul"].forEach((member, j) => {
+        const mealCellIndex = 1 + j * 2;
+        const payCellIndex = mealCellIndex + 1;
+        const newMeal = parseInt(row.cells[mealCellIndex].firstChild.value) || 0;
+        const newPay = parseFloat(row.cells[payCellIndex].firstChild.value) || 0;
+        record.meals[member] = newMeal;
+        record.payments[member] = newPay;
+        meals[member] += newMeal;
+        payments[member] += newPay;
+      });
+
+      saveRecords();
+      updateMonthlyTable();
+      alert("Record updated!");
+    }
+
+    /**
+     * Delete a record based on its index.
+     */
+    function deleteRecord(index) {
+      dailyRecords.splice(index, 1);
+      saveRecords();
+      recalcTotals();
+      updateMonthlyTable();
+    }
+
+    /**
+     * Calculate overall statistics and update the result view.
+     * The total cost is calculated as the sum of all member payments.
+     */
+    function calculate() {
+      // Calculate totalCost as sum of all payments.
+      const totalCost = Object.values(payments).reduce((sum, amount) => sum + amount, 0);
+      if (totalCost <= 0) {
+        alert("No payments recorded.");
+        return;
+      }
+
+      let totalMeal = Object.values(meals).reduce((sum, count) => sum + count, 0);
+      if (totalMeal <= 0) {
+        alert("No meals recorded.");
+        return;
+      }
+
+      let costPerMeal = totalCost / totalMeal;
+      let avgMealCost = totalCost / 5; // Assuming 5 members.
+
+      const tbody = document.querySelector("#resultTable tbody");
+      tbody.innerHTML = "";
+      Object.keys(meals).forEach(member => {
+        let memberCost = costPerMeal * meals[member];
+        let balance = payments[member] - memberCost;
+        tbody.innerHTML += `<tr>
+                              <td>${member}</td>
+                              <td>${meals[member]}</td>
+                              <td>${memberCost.toFixed(2)}</td>
+                              <td>${payments[member].toFixed(2)}</td>
+                              <td>${balance.toFixed(2)}</td>
+                            </tr>`;
+      });
+
+      // Update displayed totals with unit "Taka".
+      document.getElementById("totalCost").textContent = totalCost.toFixed(2);
+      document.getElementById("totalMeal").textContent = totalMeal;
+      document.getElementById("costPerMeal").textContent = costPerMeal.toFixed(2);
+      document.getElementById("avgMealCost").textContent = avgMealCost.toFixed(2);
+      document.getElementById("result").style.display = "block";
+    }
+
+    /**
+     * Download the report as a PDF.
+     * This function embeds Times New Roman as the font so that all text in the PDF uses Times New Roman.
+     */
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // --- Embed custom Times New Roman font ---
+      // Replace the following base64 string with the full base64 encoded TTF content for Times New Roman.
+      const timesNewRomanBase64 = "AAEAAAALAIAAAwAwT1MvMg8S..."; // Replace with your full base64 encoded TTF.
+      doc.addFileToVFS("TimesNewRoman.ttf", timesNewRomanBase64);
+      doc.addFont("TimesNewRoman.ttf", "TimesNewRoman", "normal");
+      doc.setFont("TimesNewRoman", "normal");
+
+      const timestamp = new Date().toLocaleString();
+
+      doc.setFontSize(18);
+      doc.text("Mess Manager Report", 20, 20);
+      doc.setFontSize(12);
+      doc.text(`Report Generated: ${timestamp}`, 20, 30);
+
+      const totalCost = Object.values(payments).reduce((sum, amount) => sum + amount, 0);
+      doc.text(`Total Cost: ${totalCost.toFixed(2)} Taka`, 20, 40);
+      doc.text(`Total Meals: ${document.getElementById("totalMeal").textContent}`, 20, 50);
+      doc.text(`Cost per Meal: ${document.getElementById("costPerMeal").textContent} Taka`, 20, 60);
+      doc.text(`Average Meal Cost: ${document.getElementById("avgMealCost").textContent} Taka`, 20, 70);
+
+      let y = 80;
+      doc.text("Member Costs:", 20, y);
+      y += 10;
+      Object.keys(meals).forEach(member => {
+        let memberCost = parseFloat((meals[member] * parseFloat(document.getElementById("costPerMeal").textContent)).toFixed(2));
+        doc.text(`${member}: ${meals[member]} meals - ${memberCost} Taka, Paid: ${payments[member].toFixed(2)} Taka`, 20, y);
+        y += 10;
+      });
+
+      const filename = `Mess_Report_${new Date().toISOString().replace(/[:.]/g, '-')}.pdf`;
+      doc.save(filename);
+    }
+</script>
